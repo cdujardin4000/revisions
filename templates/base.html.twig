@@ -21,6 +21,7 @@
         <nav>
             <ul>
                 {% if app.user %}
+                    {#{{ dump(app.user) }}#}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}">Log out</a>
                     </li>
