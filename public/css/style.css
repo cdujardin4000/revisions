@@ -1,0 +1,10 @@
+.emp-remove-action {
+    display: inline-block;
+    padding: .2rem;
+
+}
+
+.btn-remove-action {
+    color: white;
+    background: red;
+}

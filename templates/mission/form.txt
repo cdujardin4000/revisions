@@ -1,0 +1,20 @@
+                        <form method="post" action="{{ path('app_mission_terminate', {'mission_id': mission})}}">
+                            <input type="hidden" name="_mission_id" value="{{ mission }}">
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('terminate') }}">
+
+                            <input type="hidden" name="_target_path" value="/mission/{{mission.mission_id}}/terminate">
+
+                            <button type="submit" class="btn btn-green">Terminate</button>
+                        </form>
+
+
+                                if ($this->isCsrfTokenValid('terminate', $request->request->get('_token')))
+                                {
+                                    $employee = $employeeRepository->find($this->getUser()?->getId());
+                                    //dd($employee);
+                                    //$missionRepository->remove($mission, true);
+                                    $mission->setEmployee($employee);
+                                    $mission->setStatus('ongoing');
+                                    $missionRepository->save($mission, true);
+                                }

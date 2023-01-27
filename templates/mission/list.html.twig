@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mission list{% endblock %}
+
+{% block body %}
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    <h1>My missions</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mission_id</th>
+                <th>Id</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mission in missions %}
+            {# instanciate action and submit message #}
+            {% set action = '' %}
+            {# check action #}
+            {% if mission.status == 'ongoing' %}
+                {% set action = 'terminate' %}
+            {% elseif mission.status == 'not taken' %}
+                {% set action = 'accept' %}
+            {% endif %}
+            <tr>
+                <td>{{ mission.mission_id }}</td>
+                <td>{{ mission.emp_no }}</td>
+                <td>{{ mission.description }}</td>
+                <td>{{ mission.due_date ? mission.due_date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ mission.status }}</td>
+                <td>
+                    {# generate strtoken #}
+                    {% set strToken = app.user.id ~ 'mission-action' ~ mission.mission_id %}
+                    {# render form #}
+                    <form action="{{ path('app_mission_listAction', {mission_id: mission.mission_id}) }}" method="post" onsubmit="return confirm('Are you sure you want to {{ action }} this item?');">
+                        {# the argument of csrf_token() is an arbitrary string used to generate the token #}
+                        <input type="hidden" name="action" value="{{ action }}"/>
+                        <input type="hidden" name="mission_id" value="{{ mission.mission_id }}"/>
+                        <input type="hidden" name="emp_no" value="{{ app.user.id }}"/>
+                        <input type="hidden" name="token" value="{{ csrf_token(strToken) }}"/>
+                        <button type="submit">{{ action }}</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif  %}
+
+{% endblock %}
+
