@@ -69,11 +69,11 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'emp_no')]
     private Collection $projects;
 
+    #[ORM\ManyToMany(targetEntity: Car::class, mappedBy: 'employee', indexBy: 'emp_no')]
     #[ORM\JoinTable(name: 'cars_emp')]
+    #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'emp_no')]
     #[ORM\JoinColumn(name: 'car_id', referencedColumnName: 'car_id')]
-    //#[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'emp_no')]
-    #[ORM\OneToOne(mappedBy: 'employee', targetEntity: Car::class)]
-    private ?Entity $car;
+    private Collection $car;
 
     public function __construct()
     {
@@ -83,7 +83,7 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
         $this->projects = new ArrayCollection();
     }
 
-    public function getCar(): ?Entity
+    public function getCar(): ?Car
     {
         return $this->car;
     }

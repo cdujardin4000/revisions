@@ -26,11 +26,11 @@ class Car
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $img_url = null;
 
+    #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'car',)]
     #[ORM\JoinTable(name: 'cars_emp')]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'emp_no')]
     #[ORM\InverseJoinColumn(name: 'car_id', referencedColumnName: 'car_id')]
-    #[ORM\OneToOne(inversedBy: 'car',targetEntity: Employee::class)]
-    private ?Employee $employee;
+    private collection $employee;
 
 
 

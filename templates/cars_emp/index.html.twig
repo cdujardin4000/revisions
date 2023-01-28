@@ -5,30 +5,52 @@
 {% block body %}
     <h1>CarsEmp index</h1>
 
-    <table class="table">
-        <thead>
+    <form>
+        <table class="table">
+            <thead>
             <tr>
                 <th>Emp_no</th>
                 <th>Car_id</th>
                 <th>switch</th>
-                <th>action</th>
             </tr>
-        </thead>
-        <tbody>
-        {% for cars_emp in cars_emps %}
-            <tr>
-                <td>{{ cars_emp.empNo }}</td>
-                <td>{{ cars_emp.carId }}</td>
+            </thead>
+            <tbody>
+            {% for cars_emp in cars_emps %}
+                {#{% set strToken = app.user.id ~ 'switchCars-action' ~ mission.mission_id %}#}
+                {% set value = cars_emp.empNo ~ ' ' ~ cars_emp.carId %}
+                <tr>
+                    <td>{{ cars_emp.empNo }}</td>
+                    <td>{{ cars_emp.carId }}</td>
 
-                <td>
-                    <a href="{{ path('app_cars_emp_show', {'id': cars_emp.id}) }}">show</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    <td>
+                        <input type="checkbox" id="subscribeNews" name="subscribe" value="{{ value }}">
+                        <a href="{{ path(
+                            'app_cars_emp_show',{
+                                'car_id': cars_emp.carId,
+                                'id': cars_emp.empNo
+                            }
+                        ) }}">show</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+        <div>
+
+            <label for="subscribeNews">Souhaitez-vous vous abonner à la newsletter ?</label>
+        </div>
+        <div>
+            <button type="submit">S'abonner</button>
+        </div>
+    </form>
+
+
 {% endblock %}
