@@ -55,6 +55,14 @@
         </tbody>
     </table>
 
+    <h2>Absences de l'employé:</h2>
+
+    {% for leave in employee.leaves %}
+        <p>{{ leave.fromDate|date('Y-m-d') }} - {{ leave.toDate|date('Y-m-d') }} : {{ leave.type }}</p>
+    {% endfor %}
+
+    <p>Total de jours d'absence: {{ nbJours }} </p>
+
     <a href="{{ path('app_employee_index') }}">back to list</a>
 
     <a href="{{ path('app_employee_edit', {'id': employee.id}) }}">edit</a>

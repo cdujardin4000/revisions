@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: '`cars_emp`')]
 #[ORM\Entity(repositoryClass: CarsEmpRepository::class)]
+#[ORM\UniqueConstraint(name: "emp_no_car_id_unique",
+    columns: ["emp_no", "car_id"])]
 class CarsEmp
 {
     #[ORM\Id]
@@ -21,6 +23,8 @@ class CarsEmp
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?DateTimeInterface $from_date = null;
+
+
 
 
     public function getEmpNo(): ?int
@@ -58,4 +62,7 @@ class CarsEmp
 
         return $this;
     }
+
+
+
 }

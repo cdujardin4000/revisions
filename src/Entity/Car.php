@@ -26,13 +26,17 @@ class Car
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $img_url = null;
 
-    #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'car',)]
+    #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'cars',)]
     #[ORM\JoinTable(name: 'cars_emp')]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'emp_no')]
-    #[ORM\InverseJoinColumn(name: 'car_id', referencedColumnName: 'car_id')]
-    private collection $employee;
+    #[ORM\JoinColumn(name: 'car_id', referencedColumnName: 'car_id')]
+    #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'emp_no')]
+    private Collection $employees;
 
 
+
+    public function __toString() :string {
+        return $this->model;
+    }
 
     public function getCarId(): ?int
     {
@@ -85,19 +89,21 @@ class Car
     /**
      * @return Entity
      */
-    public function getEmployee(): Employee
+    public function getEmployees(): Collection
     {
-        return $this->employee;
+        return $this->employees;
     }
 
     /**
      * @return Car
      */
-    public function setEmployee($employee): Car
+    public function setEmployees($employees): Car
     {
-        $this->employee = $employee;
+        $this->employees = $employees;
         return $this;
     }
+
+
 
 
 }

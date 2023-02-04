@@ -18,55 +18,50 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 #[Route('/project')]
 class ProjectController extends AbstractController
 {
-    #[Route('/{projectId}/removeFromAction', name: 'app_project_removeFromAction', methods: ['POST'])]
-    public function remove(Request $request, ProjectRepository $projectRepository, EmployeeRepository $employeeRepository): Response
+    #[Route('/', name: 'app_project_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, ProjectRepository $projectRepository, EmployeeRepository $employeeRepository): Response
     {
-        // get common data
-        $action = $request->request->get('action');
-        $submittedToken = $request->request->get('token');
-        $user = $this->getUser()?->getId();
+        if ($request->getMethod() === 'POST') {
+            //define function
+            function removeFromProject($projectEntity, $projectRepository) {
+                $projectRepository->save($projectEntity, true);
+            }
+            // get common data
+            $action = $request->request->get('action');
+            $submittedToken = $request->request->get('token');
+            $user = $this->getUser()?->getId();
 
-        //get usage data
-        $project = $request->request->get('project');
-        $project_id = $request->request->get('project_id');
-        $employee = $request->request->get('employee');
+            //get usage data
+            $project = $request->request->get('project');
+            $project_id = $request->request->get('project_id');
+            $employee = $request->request->get('employee');
 
-        //generate the validationToken
-        $validationToken = new csrfToken($user . 'project-action' . $project_id, $submittedToken);
+            //generate the validationToken
+            $validationToken = new csrfToken($user . 'project-action' . $project_id, $submittedToken);
 
-        /**
-        //check data
-        $obj = new stdClass;
-        $obj->employee = $employee;
-        $obj->user = $user;
-        $obj->validationToken = $validationToken->getValue();
-        $obj->submittedToken = $submittedToken;
-        //dd($obj);*/
+            /**
+            //check data
+            $obj = new stdClass;
+            $obj->employee = $employee;
+            $obj->user = $user;
+            $obj->validationToken = $validationToken->getValue();
+            $obj->submittedToken = $submittedToken;
+            //dd($obj);*/
 
-        //check if  tokens are  the same both side of the request
-        if (!$user || $validationToken->getValue() !== $submittedToken) {
-            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+            //check if  tokens are  the same both side of the request
+            if (!$user || $validationToken->getValue() !== $submittedToken) {
+                return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+            }
+
+            $projectEntity = $projectRepository->find($project_id);
+            $employeeEntity = $employeeRepository->find($employee);
+
+            if ($projectEntity && $employeeEntity && $action === 'remove' && $projectEntity->getDescription() === $project && $projectEntity->removeEmployee($employeeEntity)) {
+
+                removeFromProject($projectEntity, $projectRepository);
+            }
         }
 
-        $projectEntity = $projectRepository->find($project_id);
-        $employeeEntity = $employeeRepository->find($employee);
-        //dump($projectEntity?->getDescription());
-        //dd($project);
-        //process
-        if ($projectEntity && $employeeEntity && $action === 'remove' && $projectEntity->getDescription() === $project && $projectEntity->removeEmployee($employeeEntity)) {
-
-            $projectRepository->save($projectEntity, true);
-        }
-
-        return $this->redirectToRoute('app_project_index', [
-            'projects' => $projectRepository->findall()
-        ], Response::HTTP_SEE_OTHER);
-
-    }
-
-    #[Route('/', name: 'app_project_index', methods: ['GET'])]
-    public function index(ProjectRepository $projectRepository): Response
-    {
         return $this->render('project/index.html.twig', [
             'projects' => $projectRepository->findAll(),
         ]);

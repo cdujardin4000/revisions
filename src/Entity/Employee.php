@@ -8,8 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Entity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -69,31 +67,42 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'emp_no')]
     private Collection $projects;
 
-    #[ORM\ManyToMany(targetEntity: Car::class, mappedBy: 'employee', indexBy: 'emp_no')]
+    #[ORM\ManyToMany(targetEntity: Car::class, mappedBy: 'employees', indexBy: 'emp_no')]
     #[ORM\JoinTable(name: 'cars_emp')]
-    #[ORM\InverseJoinColumn(name: 'id', referencedColumnName: 'emp_no')]
+    #[ORM\InverseJoinColumn(name: 'emp_no', referencedColumnName: 'id')]
     #[ORM\JoinColumn(name: 'car_id', referencedColumnName: 'car_id')]
-    private Collection $car;
+    private Collection $cars;
+
+    #[ORM\ManyToMany(targetEntity: Department::class, inversedBy:'employees', fetch: "EAGER")]
+    #[ORM\JoinTable(name: 'dept_emp')]
+    #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
+    #[ORM\InverseJoinColumn(name: 'dept_no', referencedColumnName: 'dept_no')]
+    private Collection $departments;
+
+    #[ORM\OneToMany(mappedBy: 'supervisor', targetEntity: Intern::class)]
+    private Collection $interns;
+
+/*    #[ORM\OneToOne(inversedBy: 'employee', targetEntity: CarsEmp::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'emp_no')]
+    #[ORM\InverseJoinColumn(name: 'car_id', referencedColumnName: 'car_id', nullable: false)]
+    private ?CarsEmp $carsEmp;*/
 
     public function __construct()
     {
+        $this->interns = new ArrayCollection();
+        $this->departments = new ArrayCollection();
         $this->missions = new ArrayCollection();
         $this->leaves = new ArrayCollection();
         $this->project_managements = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->cars = new ArrayCollection();
     }
 
-    public function getCar(): ?Car
+    public function getCars(): Collection
     {
-        return $this->car;
+        return $this->cars;
     }
 
-    public function setCar(?Car $car): self
-    {
-        $this->car = $car;
-
-        return $this;
-    }
 
     public function __toString() :string {
         return "$this->firstName $this->lastName";
@@ -376,6 +385,48 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->projects->removeElement($project)) {
             $project->removeEmployee($this);
+        }
+
+        return $this;
+    }
+
+    public function getDepartment(): ?Department
+    {
+        return $this->department;
+    }
+
+    public function setDepartment(?Department $department): self
+    {
+        $this->department = $department;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Intern>
+     */
+    public function getInterns(): Collection
+    {
+        return $this->interns;
+    }
+
+    public function addIntern(Intern $intern): self
+    {
+        if (!$this->interns->contains($intern)) {
+            $this->interns->add($intern);
+            $intern->setSupervisor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIntern(Intern $intern): self
+    {
+        if ($this->interns->removeElement($intern)) {
+            // set the owning side to null (unless already changed)
+            if ($intern->getSupervisor() === $this) {
+                $intern->setSupervisor(null);
+            }
         }
 
         return $this;

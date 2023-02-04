@@ -31,7 +31,7 @@
                                 {# generate strtoken #}
                                 {% set strToken = app.user.id ~ 'project-action' ~ project.projectId ~ employee %}
                                 {# render form #}
-                                <form action="{{ path('app_project_removeFromAction', { projectId: project.projectId }) }}" method="post" onsubmit="return confirm('Are you sure you want to {{ action }} this item?');">
+                                <form action="{{ path('app_project_index') }}" method="post" onsubmit="return confirm('Are you sure you want to {{ action }} this item?');">
                                     {# the argument of csrf_token() is an arbitrary string used to generate the token #}
                                     <input type="hidden" name="action" value="{{ action }}"/>
                                     <input type="hidden" name="project_id" value="{{  project.projectId }}"/>
@@ -39,7 +39,7 @@
                                     <input type="hidden" name="project" value="{{  project }}"/>
                                     <input type="hidden" name="emp_no" value="{{ app.user.id }}"/>
                                     <input type="hidden" name="token" value="{{ csrf_token(strToken) }}"/>
-                                    <button type="submit" class="btn-remove-action">{{ action }}</button>
+                                    <button type="submit" class="{{ action }}">{{ action }}</button>
                                 </form>
                             </div>
                         {% endfor  %}

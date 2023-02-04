@@ -30,7 +30,7 @@
                 <td>{{ mission.mission_id }}</td>
                 <td>{{ mission.emp_no }}</td>
                 <td>{{ mission.description }}</td>
-                <td>{{ mission.due_date ? mission.due_date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ mission.due_date ? mission.due_date|date('Y-m-d') : '' }}</td>
                 <td>{{ mission.status }}</td>
                 <td>
                     {# generate strtoken #}
@@ -42,7 +42,7 @@
                         <input type="hidden" name="mission_id" value="{{ mission.mission_id }}"/>
                         <input type="hidden" name="emp_no" value="{{ app.user.id }}"/>
                         <input type="hidden" name="token" value="{{ csrf_token(strToken) }}"/>
-                        <button type="submit">{{ action }}</button>
+                        <button type="submit" class="{{ action }}">{{ action }}</button>
                     </form>
                 </td>
             </tr>

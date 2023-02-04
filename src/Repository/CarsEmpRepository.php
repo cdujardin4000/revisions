@@ -39,6 +39,28 @@ class CarsEmpRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function findModel($car_id): array
+    {
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT 'model' FROM cars WHERE car_id=:car_id";
+        //dd($id);
+        $stmt = $conn->prepare($sql);
+
+
+        return $stmt->executeQuery([
+            'car_id' => $car_id,
+        ])->fetchOne();
+
+
+
+
+    }
+
 //    /**
 //     * @return CarsEmp[] Returns an array of CarsEmp objects
 //     */

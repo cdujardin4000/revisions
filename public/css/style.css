@@ -4,7 +4,25 @@
 
 }
 
-.btn-remove-action {
+select {
+    margin-bottom : 2rem;
+}
+
+
+/**BUTTONS*/
+.remove {
     color: white;
-    background: red;
+    background: lightcoral;
+}
+
+.terminate{
+    background: lightcoral;
+}
+
+.accept{
+    background : lightgreen;
+}
+
+.supervise{
+    background: lightgreen;
 }

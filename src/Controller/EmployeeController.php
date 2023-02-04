@@ -51,9 +51,16 @@ class EmployeeController extends AbstractController
     #[Route('/{id}', name: 'app_employee_show', methods: ['GET'])]
     public function show(Employee $employee): Response
     {
-        //dd($employee->getMissions()[0]);
+        $nbJours = 0;
+        $leaves = $employee->getLeaves();
+        foreach($leaves as $leave)
+        {
+            //dd((int)$leave->getFromDate()->diff($leave->getToDate())->format("%a"));
+            $nbJours += (int)$leave->getFromDate()->diff($leave->getToDate())->format("%a");
+        }
         return $this->render('employee/show.html.twig', [
             'employee' => $employee,
+            'nbJours' => $nbJours
         ]);
     }
 
